@@ -1,0 +1,49 @@
+# Build outputs
+build/
+.gradle/
+app/build/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Gradle
+gradle-app.setting
+!gradle-wrapper.jar
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Local configuration (SDK path, etc.)
+local.properties
+
+# Signing (keystores, never commit)
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# ProGuard / R8
+proguard/
+*.mapping
+
+# OS
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+
+# Optional: uncomment if you use these
+# .vscode/
+# *.hprof

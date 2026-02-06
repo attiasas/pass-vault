@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1E3A5F</color>
+    <color name="primary_dark">#152A47</color>
+    <color name="accent">#4A90D9</color>
+    <color name="surface">#F5F7FA</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="health_good">#10B981</color>
+    <color name="health_warning">#F59E0B</color>
+    <color name="health_bad">#EF4444</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
