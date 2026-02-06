@@ -1,0 +1,163 @@
+package com.passvault.app.storage;
+
+import android.content.Context;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.passvault.app.crypto.KeyDerivation;
+import com.passvault.app.crypto.VaultCipher;
+import com.passvault.app.data.AuthEntry;
+import com.passvault.app.data.EncryptionMethod;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Encrypted local storage for auth entries. All data encrypted with master key.
+ */
+public class VaultRepository {
+
+    private static final String VAULT_FILE = "vault.dat";
+
+    private final Context context;
+    private final PrefsManager prefs;
+    private final Gson gson;
+    private byte[] currentKey;
+    private List<AuthEntry> entriesCache;
+
+    public VaultRepository(Context context) {
+        this.context = context.getApplicationContext();
+        this.prefs = new PrefsManager(context);
+        this.gson = new Gson();
+    }
+
+    public void unlock(char[] masterPassword) throws Exception {
+        byte[] salt = prefs.getSalt();
+        if (salt == null) throw new IllegalStateException("No salt");
+        currentKey = KeyDerivation.deriveKey(masterPassword, salt);
+        loadEntries();
+    }
+
+    public void createVault(char[] masterPassword) throws Exception {
+        byte[] salt = KeyDerivation.generateSalt();
+        String hash = KeyDerivation.deriveHashForVerification(masterPassword, salt);
+        prefs.setSalt(salt);
+        prefs.setMasterHash(hash);
+        currentKey = KeyDerivation.deriveKey(masterPassword, salt);
+        entriesCache = new ArrayList<>();
+        saveEntries();
+    }
+
+    public boolean verifyPassword(char[] masterPassword) {
+        byte[] salt = prefs.getSalt();
+        String hash = prefs.getMasterHash();
+        return salt != null && hash != null && KeyDerivation.verifyPassword(masterPassword, salt, hash);
+    }
+
+    public void changeMasterPassword(char[] oldPassword, char[] newPassword) throws Exception {
+        if (currentKey == null) unlock(oldPassword);
+        List<AuthEntry> entries = getAllEntries();
+        byte[] newSalt = KeyDerivation.generateSalt();
+        String newHash = KeyDerivation.deriveHashForVerification(newPassword, newSalt);
+        byte[] newKey = KeyDerivation.deriveKey(newPassword, newSalt);
+        prefs.setSalt(newSalt);
+        prefs.setMasterHash(newHash);
+        currentKey = newKey;
+        entriesCache = entries;
+        saveEntries();
+    }
+
+    public void lock() {
+        currentKey = null;
+        entriesCache = null;
+    }
+
+    public boolean isUnlocked() {
+        return currentKey != null;
+    }
+
+    public List<AuthEntry> getAllEntries() {
+        if (entriesCache == null) throw new IllegalStateException("Vault locked");
+        return new ArrayList<>(entriesCache);
+    }
+
+    public void addEntry(AuthEntry entry) {
+        if (entriesCache == null) throw new IllegalStateException("Vault locked");
+        entriesCache.add(entry);
+        saveEntries();
+    }
+
+    public void updateEntry(AuthEntry entry) {
+        if (entriesCache == null) throw new IllegalStateException("Vault locked");
+        for (int i = 0; i < entriesCache.size(); i++) {
+            if (entriesCache.get(i).getId().equals(entry.getId())) {
+                entriesCache.set(i, entry);
+                saveEntries();
+                return;
+            }
+        }
+    }
+
+    public void deleteEntry(String id) {
+        if (entriesCache == null) throw new IllegalStateException("Vault locked");
+        entriesCache.removeIf(e -> e.getId().equals(id));
+        saveEntries();
+    }
+
+    public AuthEntry getEntryById(String id) {
+        if (entriesCache == null) return null;
+        for (AuthEntry e : entriesCache) {
+            if (e.getId().equals(id)) return e;
+        }
+        return null;
+    }
+
+    public EncryptionMethod getEncryptionMethod() {
+        return prefs.getEncryptionMethod();
+    }
+
+    public void setEncryptionMethod(EncryptionMethod method) {
+        prefs.setEncryptionMethod(method);
+    }
+
+    private void loadEntries() throws Exception {
+        File file = new File(context.getFilesDir(), VAULT_FILE);
+        if (!file.exists()) {
+            entriesCache = new ArrayList<>();
+            return;
+        }
+        byte[] raw;
+        try (FileInputStream fis = new FileInputStream(file)) {
+            raw = new byte[(int) file.length()];
+            int n = fis.read(raw);
+            if (n != raw.length) throw new IOException("Short read");
+        }
+        String json = VaultCipher.decrypt(currentKey, new String(raw, StandardCharsets.UTF_8), prefs.getEncryptionMethod());
+        if (json == null || json.isEmpty()) {
+            entriesCache = new ArrayList<>();
+            return;
+        }
+        entriesCache = gson.fromJson(json, new TypeToken<List<AuthEntry>>() {}.getType());
+        if (entriesCache == null) entriesCache = new ArrayList<>();
+    }
+
+    private void saveEntries() {
+        if (currentKey == null || entriesCache == null) return;
+        try {
+            String json = gson.toJson(entriesCache);
+            String encrypted = VaultCipher.encrypt(currentKey, json, prefs.getEncryptionMethod());
+            File file = new File(context.getFilesDir(), VAULT_FILE);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(encrypted.getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Save failed", e);
+        }
+    }
+}
