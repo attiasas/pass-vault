@@ -60,10 +60,11 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     error = e;
                 }
+                final Exception resultError = error;
                 runOnUiThread(() -> {
                     setLoading(false);
-                    if (error != null) {
-                        Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (resultError != null) {
+                        Toast.makeText(this, "Error: " + resultError.getMessage(), Toast.LENGTH_SHORT).show();
                     } else {
                         openVault();
                     }
