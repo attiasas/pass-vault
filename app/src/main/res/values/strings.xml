@@ -30,7 +30,7 @@
     <string name="logout">Logout</string>
     <string name="length">Length</string>
     <string name="generate">Generate</string>
-    <string name="special_most_supported_only">Only most supported (!@#$%^&*()+-=)</string>
+    <string name="special_most_supported_only">Only most supported (!@#$%^&amp;*()+-=)</string>
     <string name="copy">Copy</string>
     <string name="days_used">Days in use</string>
     <string name="strength">Strength</string>
