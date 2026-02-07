@@ -44,7 +44,15 @@ public class MoreInfoActivity extends AppCompatActivity {
         }
 
         String id = getIntent().getStringExtra(EXTRA_ENTRY_ID);
-        AuthEntry entry = id != null ? vault.getEntryById(id) : null;
+        AuthEntry entry = null;
+        if (id != null) {
+            try {
+                entry = vault.getEntryWithHistory(id);
+            } catch (Exception e) {
+                finish();
+                return;
+            }
+        }
         if (entry == null) {
             finish();
             return;

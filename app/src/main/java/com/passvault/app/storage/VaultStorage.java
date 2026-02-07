@@ -13,8 +13,14 @@ public interface VaultStorage {
 
     /**
      * Load and decrypt all entries. Returns empty list if none.
+     * @param includeHistory when false, history is left empty (faster load for list view).
      */
-    List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method) throws Exception;
+    List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method, boolean includeHistory) throws Exception;
+
+    /**
+     * Load a single entry by id with history (e.g. for More Info or Edit).
+     */
+    AuthEntry getEntryWithHistory(byte[] key, EncryptionMethod method, String entryId) throws Exception;
 
     /**
      * Encrypt and persist all entries (replaces existing data).

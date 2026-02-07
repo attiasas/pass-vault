@@ -7,7 +7,9 @@ import com.passvault.app.data.AuthEntry;
 import com.passvault.app.data.EncryptionMethod;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Encrypted local storage for auth entries. All data encrypted with master key.
@@ -35,7 +37,7 @@ public class VaultRepository {
         byte[] salt = prefs.getSalt();
         if (salt == null) throw new IllegalStateException("No salt");
         currentKey = KeyDerivation.deriveKey(masterPassword, salt);
-        entriesCache = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod());
+        entriesCache = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod(), false);
         if (entriesCache == null) entriesCache = new ArrayList<>();
     }
 
@@ -57,15 +59,15 @@ public class VaultRepository {
 
     public void changeMasterPassword(char[] oldPassword, char[] newPassword) throws Exception {
         if (currentKey == null) unlock(oldPassword);
-        List<AuthEntry> entries = getAllEntries();
+        List<AuthEntry> full = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod(), true);
         byte[] newSalt = KeyDerivation.generateSalt();
         String newHash = KeyDerivation.deriveHashForVerification(newPassword, newSalt);
         byte[] newKey = KeyDerivation.deriveKey(newPassword, newSalt);
         prefs.setSalt(newSalt);
         prefs.setMasterHash(newHash);
         currentKey = newKey;
-        entriesCache = entries;
-        saveEntries();
+        entriesCache = new ArrayList<>(full);
+        saveEntriesDirect();
     }
 
     public void lock() {
@@ -118,6 +120,23 @@ public class VaultRepository {
         return null;
     }
 
+    /**
+     * Load a single entry with history from storage (e.g. for More Info or Edit).
+     * Updates the entry in cache so subsequent getEntryById returns the full entry.
+     */
+    public AuthEntry getEntryWithHistory(String id) throws Exception {
+        if (currentKey == null || entriesCache == null) return null;
+        AuthEntry full = getStorage().getEntryWithHistory(currentKey, prefs.getEncryptionMethod(), id);
+        if (full == null) return null;
+        for (int i = 0; i < entriesCache.size(); i++) {
+            if (entriesCache.get(i).getId().equals(id)) {
+                entriesCache.set(i, full);
+                break;
+            }
+        }
+        return full;
+    }
+
     public EncryptionMethod getEncryptionMethod() {
         return prefs.getEncryptionMethod();
     }
@@ -137,14 +156,46 @@ public class VaultRepository {
         if (currentKey == null || entriesCache == null) throw new IllegalStateException("Vault locked");
         if (prefs.getStorageType() == newType) return;
         try {
+            List<AuthEntry> full = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod(), true);
             prefs.setStorageType(newType);
-            getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), entriesCache);
+            getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), full);
+            entriesCache = full;
         } catch (Exception e) {
             throw new RuntimeException("Failed to switch storage", e);
         }
     }
 
     private void saveEntries() {
+        if (currentKey == null || entriesCache == null) return;
+        try {
+            List<AuthEntry> full = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod(), true);
+            Map<String, AuthEntry> byId = new HashMap<>();
+            for (AuthEntry e : full) byId.put(e.getId(), e);
+            List<AuthEntry> toSave = new ArrayList<>();
+            for (AuthEntry cached : entriesCache) {
+                AuthEntry existing = byId.get(cached.getId());
+                if (existing != null) {
+                    existing.setTitle(cached.getTitle());
+                    existing.setUsername(cached.getUsername());
+                    existing.setPasswordOrToken(cached.getPasswordOrToken());
+                    existing.setCreatedAt(cached.getCreatedAt());
+                    existing.setUpdatedAt(cached.getUpdatedAt());
+                    if (cached.getHistory() != null && !cached.getHistory().isEmpty()) {
+                        existing.setHistory(cached.getHistory());
+                    }
+                    toSave.add(existing);
+                } else {
+                    toSave.add(cached);
+                }
+            }
+            getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), toSave);
+        } catch (Exception e) {
+            throw new RuntimeException("Save failed", e);
+        }
+    }
+
+    /** Saves cache as-is (use when cache is already full, e.g. after change master password). */
+    private void saveEntriesDirect() {
         if (currentKey == null || entriesCache == null) return;
         try {
             getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), entriesCache);

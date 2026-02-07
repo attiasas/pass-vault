@@ -41,18 +41,21 @@ public class SqlVaultStorage implements VaultStorage {
     }
 
     @Override
-    public List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method) throws Exception {
+    public List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method, boolean includeHistory) throws Exception {
         SqlHelper helper = new SqlHelper(context);
         SQLiteDatabase db = helper.getReadableDatabase();
         List<AuthEntry> result = new ArrayList<>();
-        try (Cursor c = db.query(TABLE_ENTRIES, null, null, null, null, null, COL_CREATED_AT + " ASC")) {
+        String[] columns = includeHistory
+                ? null
+                : new String[]{COL_ID, COL_TITLE, COL_USERNAME, COL_PASSWORD_ENCRYPTED, COL_CREATED_AT, COL_UPDATED_AT};
+        try (Cursor c = db.query(TABLE_ENTRIES, columns, null, null, null, null, COL_CREATED_AT + " ASC")) {
             int idxId = c.getColumnIndexOrThrow(COL_ID);
             int idxTitle = c.getColumnIndexOrThrow(COL_TITLE);
             int idxUsername = c.getColumnIndexOrThrow(COL_USERNAME);
             int idxPassword = c.getColumnIndexOrThrow(COL_PASSWORD_ENCRYPTED);
             int idxCreated = c.getColumnIndexOrThrow(COL_CREATED_AT);
             int idxUpdated = c.getColumnIndexOrThrow(COL_UPDATED_AT);
-            int idxHistory = c.getColumnIndexOrThrow(COL_HISTORY_ENCRYPTED);
+            int idxHistory = includeHistory ? c.getColumnIndexOrThrow(COL_HISTORY_ENCRYPTED) : -1;
             while (c.moveToNext()) {
                 AuthEntry e = new AuthEntry();
                 e.setId(c.getString(idxId));
@@ -63,19 +66,56 @@ public class SqlVaultStorage implements VaultStorage {
                         ? VaultCipher.decrypt(key, passEnc, method) : "");
                 e.setCreatedAt(c.getLong(idxCreated));
                 e.setUpdatedAt(c.getLong(idxUpdated));
-                String histEnc = c.getString(idxHistory);
-                if (histEnc != null && !histEnc.isEmpty()) {
-                    String histJson = VaultCipher.decrypt(key, histEnc, method);
-                    if (histJson != null && !histJson.isEmpty()) {
-                        List<EntryHistoryItem> history = gson.fromJson(histJson,
-                                new TypeToken<List<EntryHistoryItem>>() {}.getType());
-                        e.setHistory(history != null ? history : new ArrayList<>());
+                if (includeHistory && idxHistory >= 0) {
+                    String histEnc = c.getString(idxHistory);
+                    if (histEnc != null && !histEnc.isEmpty()) {
+                        String histJson = VaultCipher.decrypt(key, histEnc, method);
+                        if (histJson != null && !histJson.isEmpty()) {
+                            List<EntryHistoryItem> history = gson.fromJson(histJson,
+                                    new TypeToken<List<EntryHistoryItem>>() {}.getType());
+                            e.setHistory(history != null ? history : new ArrayList<>());
+                        }
                     }
                 }
                 result.add(e);
             }
         }
         return result;
+    }
+
+    @Override
+    public AuthEntry getEntryWithHistory(byte[] key, EncryptionMethod method, String entryId) throws Exception {
+        SqlHelper helper = new SqlHelper(context);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        try (Cursor c = db.query(TABLE_ENTRIES, null, COL_ID + "=?", new String[]{entryId}, null, null, null)) {
+            if (!c.moveToFirst()) return null;
+            int idxId = c.getColumnIndexOrThrow(COL_ID);
+            int idxTitle = c.getColumnIndexOrThrow(COL_TITLE);
+            int idxUsername = c.getColumnIndexOrThrow(COL_USERNAME);
+            int idxPassword = c.getColumnIndexOrThrow(COL_PASSWORD_ENCRYPTED);
+            int idxCreated = c.getColumnIndexOrThrow(COL_CREATED_AT);
+            int idxUpdated = c.getColumnIndexOrThrow(COL_UPDATED_AT);
+            int idxHistory = c.getColumnIndexOrThrow(COL_HISTORY_ENCRYPTED);
+            AuthEntry e = new AuthEntry();
+            e.setId(c.getString(idxId));
+            e.setTitle(c.getString(idxTitle));
+            e.setUsername(c.getString(idxUsername));
+            String passEnc = c.getString(idxPassword);
+            e.setPasswordOrToken(passEnc != null && !passEnc.isEmpty()
+                    ? VaultCipher.decrypt(key, passEnc, method) : "");
+            e.setCreatedAt(c.getLong(idxCreated));
+            e.setUpdatedAt(c.getLong(idxUpdated));
+            String histEnc = c.getString(idxHistory);
+            if (histEnc != null && !histEnc.isEmpty()) {
+                String histJson = VaultCipher.decrypt(key, histEnc, method);
+                if (histJson != null && !histJson.isEmpty()) {
+                    List<EntryHistoryItem> history = gson.fromJson(histJson,
+                            new TypeToken<List<EntryHistoryItem>>() {}.getType());
+                    e.setHistory(history != null ? history : new ArrayList<>());
+                }
+            }
+            return e;
+        }
     }
 
     @Override

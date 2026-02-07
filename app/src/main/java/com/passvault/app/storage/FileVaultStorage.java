@@ -31,7 +31,7 @@ public class FileVaultStorage implements VaultStorage {
     }
 
     @Override
-    public List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method) throws Exception {
+    public List<AuthEntry> loadEntries(byte[] key, EncryptionMethod method, boolean includeHistory) throws Exception {
         File file = new File(context.getFilesDir(), VAULT_FILE);
         if (!file.exists() || file.length() == 0) return new ArrayList<>();
         byte[] raw;
@@ -43,7 +43,20 @@ public class FileVaultStorage implements VaultStorage {
         String json = VaultCipher.decrypt(key, new String(raw, StandardCharsets.UTF_8), method);
         if (json == null || json.isEmpty()) return new ArrayList<>();
         List<AuthEntry> list = gson.fromJson(json, new TypeToken<List<AuthEntry>>() {}.getType());
-        return list != null ? list : new ArrayList<>();
+        if (list == null) return new ArrayList<>();
+        if (!includeHistory) {
+            for (AuthEntry e : list) e.setHistory(new ArrayList<>());
+        }
+        return list;
+    }
+
+    @Override
+    public AuthEntry getEntryWithHistory(byte[] key, EncryptionMethod method, String entryId) throws Exception {
+        List<AuthEntry> all = loadEntries(key, method, true);
+        for (AuthEntry e : all) {
+            if (entryId.equals(e.getId())) return e;
+        }
+        return null;
     }
 
     @Override

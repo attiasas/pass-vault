@@ -36,7 +36,12 @@ public class AddEditEntryActivity extends AppCompatActivity {
         String id = getIntent().getStringExtra(EXTRA_ENTRY_ID);
         isEdit = id != null;
         if (isEdit) {
-            entry = vault.getEntryById(id);
+            try {
+                entry = vault.getEntryWithHistory(id);
+            } catch (Exception e) {
+                finish();
+                return;
+            }
             if (entry == null) {
                 finish();
                 return;
