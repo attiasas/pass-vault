@@ -80,7 +80,7 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
     }
 
     @Override
-    public void onEntryClick(AuthEntry entry) {
+    public void onEditEntryClick(AuthEntry entry) {
         Intent i = new Intent(this, AddEditEntryActivity.class);
         i.putExtra(AddEditEntryActivity.EXTRA_ENTRY_ID, entry.getId());
         startActivityForResult(i, 1);

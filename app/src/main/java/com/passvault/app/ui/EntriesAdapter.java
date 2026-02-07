@@ -6,24 +6,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.button.MaterialButton;
 import com.passvault.app.R;
 import com.passvault.app.data.AuthEntry;
 import com.passvault.app.util.HealthCalculator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> {
 
     public interface Listener {
-        void onEntryClick(AuthEntry entry);
+        void onEditEntryClick(AuthEntry entry);
         void onMoreInfoClick(AuthEntry entry);
     }
 
     private final List<AuthEntry> entries = new ArrayList<>();
+    private final Map<String, Boolean> revealedByEntryId = new HashMap<>();
     private final Listener listener;
     private final int[] healthColors;
 
@@ -60,18 +63,29 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
         h.healthBadge.setBackground(bg);
         h.healthBadge.setTextColor(android.graphics.Color.WHITE);
 
-        boolean revealed = h.revealed;
+        boolean revealed = Boolean.TRUE.equals(revealedByEntryId.get(e.getId()));
         String pass = e.getPasswordOrToken();
         h.passHidden.setText(revealed && pass != null ? pass : "••••••••");
-        h.btnReveal.setText(revealed ? R.string.hide : R.string.show);
-
-        h.btnReveal.setOnClickListener(v -> {
-            h.revealed = !h.revealed;
-            notifyItemChanged(position);
-        });
 
         h.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onEntryClick(e);
+            if (revealed) {
+                revealedByEntryId.put(e.getId(), false);
+                notifyItemChanged(position);
+            } else {
+                new AlertDialog.Builder(h.itemView.getContext())
+                        .setMessage(R.string.confirm_display_password)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            revealedByEntryId.put(e.getId(), true);
+                            int pos = findPositionByEntryId(e.getId());
+                            if (pos >= 0) notifyItemChanged(pos);
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            }
+        });
+
+        h.btnEdit.setOnClickListener(v -> {
+            if (listener != null) listener.onEditEntryClick(e);
         });
         h.btnMore.setOnClickListener(v -> {
             if (listener != null) listener.onMoreInfoClick(e);
@@ -84,6 +98,13 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
         return 2;
     }
 
+    private int findPositionByEntryId(String id) {
+        for (int i = 0; i < entries.size(); i++) {
+            if (id.equals(entries.get(i).getId())) return i;
+        }
+        return -1;
+    }
+
     @Override
     public int getItemCount() {
         return entries.size();
@@ -91,9 +112,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
 
     static class Holder extends RecyclerView.ViewHolder {
         TextView title, username, passHidden, healthBadge;
-        MaterialButton btnReveal;
-        View btnMore;
-        boolean revealed;
+        View btnEdit, btnMore;
 
         Holder(View itemView) {
             super(itemView);
@@ -101,7 +120,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
             username = itemView.findViewById(R.id.username);
             passHidden = itemView.findViewById(R.id.passHidden);
             healthBadge = itemView.findViewById(R.id.healthBadge);
-            btnReveal = itemView.findViewById(R.id.btnReveal);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
             btnMore = itemView.findViewById(R.id.btnMore);
         }
     }

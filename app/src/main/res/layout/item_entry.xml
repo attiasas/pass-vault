@@ -67,15 +67,14 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnReveal"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:minWidth="0dp"
-                android:paddingHorizontal="8dp"
-                android:text="@string/show"
-                android:textSize="12sp" />
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/edit_entry"
+                android:src="@android:drawable/ic_menu_edit"
+                app:tint="@color/text_secondary" />
 
             <ImageButton
                 android:id="@+id/btnMore"
