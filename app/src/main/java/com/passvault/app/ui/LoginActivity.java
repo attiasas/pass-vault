@@ -2,6 +2,7 @@ package com.passvault.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,10 +12,14 @@ import com.passvault.app.R;
 import com.passvault.app.databinding.ActivityLoginBinding;
 import com.passvault.app.storage.VaultRepository;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private VaultRepository vault;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         vault = ((PassVaultApp) getApplication()).getVaultRepository();
 
         boolean isNew = !vault.isVaultCreated();
-        binding.layoutConfirm.setVisibility(isNew ? android.view.View.VISIBLE : android.view.View.GONE);
+        binding.layoutConfirm.setVisibility(isNew ? View.VISIBLE : View.GONE);
         binding.btnLogin.setText(isNew ? getString(R.string.create_vault) : getString(R.string.login));
 
         binding.btnLogin.setOnClickListener(v -> {
@@ -36,25 +41,42 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                try {
-                    vault.createVault(pass);
-                    openVault();
-                } catch (Exception e) {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
             } else {
                 if (!vault.verifyPassword(pass)) {
                     Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                try {
-                    vault.unlock(pass);
-                    openVault();
-                } catch (Exception e) {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
             }
+            setLoading(true);
+            final boolean createVault = isNew;
+            executor.execute(() -> {
+                Exception error = null;
+                try {
+                    if (createVault) {
+                        vault.createVault(pass);
+                    } else {
+                        vault.unlock(pass);
+                    }
+                } catch (Exception e) {
+                    error = e;
+                }
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    if (error != null) {
+                        Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        openVault();
+                    }
+                });
+            });
         });
+    }
+
+    private void setLoading(boolean loading) {
+        binding.progressLogin.setVisibility(loading ? View.VISIBLE : View.GONE);
+        binding.btnLogin.setEnabled(!loading);
+        binding.editPassword.setEnabled(!loading);
+        binding.editConfirm.setEnabled(!loading);
     }
 
     private char[] getPassword() {
@@ -69,6 +91,12 @@ public class LoginActivity extends AppCompatActivity {
     private char[] getConfirm() {
         String s = binding.editConfirm.getText() != null ? binding.editConfirm.getText().toString() : "";
         return s.isEmpty() ? null : s.toCharArray();
+    }
+
+    @Override
+    protected void onDestroy() {
+        executor.shutdown();
+        super.onDestroy();
     }
 
     private void openVault() {
