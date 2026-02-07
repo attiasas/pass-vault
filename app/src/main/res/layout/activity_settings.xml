@@ -31,8 +31,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/storage_type"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
             <Spinner
                 android:id="@+id/spinnerStorageType"
                 android:layout_width="match_parent"
@@ -44,8 +45,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/encryption_method"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
             <Spinner
                 android:id="@+id/spinnerEncryption"
                 android:layout_width="match_parent"
