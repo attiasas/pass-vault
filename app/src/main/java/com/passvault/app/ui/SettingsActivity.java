@@ -101,6 +101,7 @@ public class SettingsActivity extends AppCompatActivity {
         binding.btnChangePassword.setOnClickListener(v -> showChangePasswordDialog());
         binding.btnExport.setOnClickListener(v -> launchExport());
         binding.btnImport.setOnClickListener(v -> launchImport());
+        binding.btnLogout.setOnClickListener(v -> logout());
 
         exportLauncher = registerForActivityResult(
                 new ActivityResultContracts.CreateDocument("application/json"),
@@ -169,5 +170,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void launchImport() {
         importLauncher.launch("application/json");
+    }
+
+    private void logout() {
+        vault.lock();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }
