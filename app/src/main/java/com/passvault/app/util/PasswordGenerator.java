@@ -14,23 +14,27 @@ public final class PasswordGenerator {
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";
     private static final String SPECIAL = "!@#$%^&*()_+-=[]{}|;:',.<>?";
+    /** Most supported special chars across systems: !@#$%^&*()+-= */
+    private static final String SPECIAL_MOST_SUPPORTED = "!@#$%^&*()+-=";
 
     private final SecureRandom random = new SecureRandom();
 
-    public String generate(int length, boolean useDigits, boolean useUpper, boolean useSpecial, float lowerCaseRatio) {
+    public String generate(int length, boolean useDigits, boolean useUpper, boolean useSpecial,
+                           boolean mostSupportedSpecialsOnly, float lowerCaseRatio) {
         if (length <= 0) return "";
         lowerCaseRatio = Math.max(0f, Math.min(1f, lowerCaseRatio));
+        String specialSet = (useSpecial && mostSupportedSpecialsOnly) ? SPECIAL_MOST_SUPPORTED : SPECIAL;
 
         List<Character> chars = new ArrayList<>();
         chars.add(LOWER.charAt(random.nextInt(LOWER.length())));
         if (useUpper) chars.add(UPPER.charAt(random.nextInt(UPPER.length())));
         if (useDigits) chars.add(DIGITS.charAt(random.nextInt(DIGITS.length())));
-        if (useSpecial) chars.add(SPECIAL.charAt(random.nextInt(SPECIAL.length())));
+        if (useSpecial) chars.add(specialSet.charAt(random.nextInt(specialSet.length())));
 
         StringBuilder other = new StringBuilder();
         if (useUpper) other.append(UPPER);
         if (useDigits) other.append(DIGITS);
-        if (useSpecial) other.append(SPECIAL);
+        if (useSpecial) other.append(specialSet);
         if (other.length() == 0) other.append(LOWER);
 
         int remaining = length - chars.size();
