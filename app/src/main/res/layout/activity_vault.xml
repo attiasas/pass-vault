@@ -14,7 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary"
-            app:title="@string/app_name"
             app:titleTextColor="@color/white"
             app:iconTint="@color/white"
             app:popupTheme="@style/ThemeOverlay.PassVault.Popup" />
@@ -27,22 +26,17 @@
         android:background="@color/surface"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
+            android:id="@+id/searchContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp">
-            <TextView
-                android:id="@+id/entryCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+            android:paddingVertical="8dp"
+            android:visibility="gone">
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:hint="@string/search_by_title">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchBox"

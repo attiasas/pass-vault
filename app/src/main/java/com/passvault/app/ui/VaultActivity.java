@@ -6,6 +6,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -30,6 +32,7 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
     private EntriesAdapter adapter;
     private List<AuthEntry> allEntries = new ArrayList<>();
     private String searchQuery = "";
+    private TextView countTextView;
     private static final int[] HEALTH_COLORS = new int[]{
             0xFF10B981, 0xFFF59E0B, 0xFFEF4444
     };
@@ -45,11 +48,30 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
             return;
         }
         setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayShowCustomEnabled(true);
+            View titleWithCount = getLayoutInflater().inflate(R.layout.toolbar_title_with_count, binding.toolbar, false);
+            getSupportActionBar().setCustomView(titleWithCount);
+            countTextView = titleWithCount.findViewById(R.id.entryCount);
+        }
         if (binding.toolbar.getOverflowIcon() != null) {
             DrawableCompat.setTint(binding.toolbar.getOverflowIcon(), ContextCompat.getColor(this, R.color.white));
         }
 
         binding.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_search) {
+                boolean visible = binding.searchContainer.getVisibility() == View.VISIBLE;
+                binding.searchContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
+                if (!visible) {
+                    binding.searchBox.requestFocus();
+                } else {
+                    binding.searchBox.setText("");
+                    searchQuery = "";
+                    applyFilter();
+                }
+                return true;
+            }
             if (item.getItemId() == R.id.menu_generator) {
                 startActivity(new Intent(this, PasswordGeneratorActivity.class));
                 return true;
@@ -115,10 +137,12 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
         adapter.setEntries(filtered);
         int total = allEntries.size();
         int shown = filtered.size();
-        if (searchQuery == null || searchQuery.isEmpty()) {
-            binding.entryCount.setText(getString(R.string.entries_count, total));
-        } else {
-            binding.entryCount.setText(getString(R.string.entries_count_filtered, shown, total));
+        if (countTextView != null) {
+            if (searchQuery == null || searchQuery.isEmpty()) {
+                countTextView.setText(getString(R.string.entries_count, total));
+            } else {
+                countTextView.setText(getString(R.string.entries_count_filtered, shown, total));
+            }
         }
     }
 
