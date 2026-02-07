@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +37,9 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
             return;
         }
         setSupportActionBar(binding.toolbar);
+        if (binding.toolbar.getOverflowIcon() != null) {
+            DrawableCompat.setTint(binding.toolbar.getOverflowIcon(), ContextCompat.getColor(this, R.color.white));
+        }
 
         binding.toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.menu_generator) {
