@@ -1,9 +1,13 @@
 package com.passvault.app.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -66,6 +70,16 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
         boolean revealed = Boolean.TRUE.equals(revealedByEntryId.get(e.getId()));
         String pass = e.getPasswordOrToken();
         h.passHidden.setText(revealed && pass != null ? pass : "••••••••");
+        h.btnCopyPass.setVisibility(revealed && pass != null && !pass.isEmpty() ? View.VISIBLE : View.GONE);
+        h.btnCopyPass.setOnClickListener(v -> {
+            if (pass != null && !pass.isEmpty()) {
+                ClipboardManager cm = (ClipboardManager) h.itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                if (cm != null) {
+                    cm.setPrimaryClip(ClipData.newPlainText("password", pass));
+                    Toast.makeText(h.itemView.getContext(), R.string.copied, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         h.itemView.setOnClickListener(v -> {
             if (revealed) {
@@ -112,7 +126,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
 
     static class Holder extends RecyclerView.ViewHolder {
         TextView title, username, passHidden, healthBadge;
-        View btnEdit, btnMore;
+        View btnEdit, btnMore, btnCopyPass;
 
         Holder(View itemView) {
             super(itemView);
@@ -120,6 +134,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.Holder> 
             username = itemView.findViewById(R.id.username);
             passHidden = itemView.findViewById(R.id.passHidden);
             healthBadge = itemView.findViewById(R.id.healthBadge);
+            btnCopyPass = itemView.findViewById(R.id.btnCopyPass);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnMore = itemView.findViewById(R.id.btnMore);
         }

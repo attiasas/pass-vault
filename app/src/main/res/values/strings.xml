@@ -38,6 +38,7 @@
     <string name="generate">Generate</string>
     <string name="special_most_supported_only">Only most supported (!@#$%^&amp;*()+-=)</string>
     <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
     <string name="use">Use</string>
     <string name="days_used">Days in use</string>
     <string name="strength">Strength</string>
