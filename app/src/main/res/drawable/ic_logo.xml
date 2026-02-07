@@ -9,12 +9,12 @@
     <path
         android:fillColor="#1E3A5F"
         android:pathData="M60,60m-44,0a44,44 0,1 1,88 0a44,44 0,1 1,-88 0" />
-    <!-- Shield: same shape, scaled -->
+    <!-- Shield: centered in circle (60,60), same shape scaled -->
     <path
         android:fillColor="#4A90D9"
-        android:pathData="M60,22 L78,29 L78,56 Q60,91 42,56 L42,29 Z" />
-    <!-- Keyhole on shield -->
+        android:pathData="M60,26 L78,33 L78,59 Q60,94 42,59 L42,33 Z" />
+    <!-- Keyhole: centered in shield (60,60) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M60,60 m-3,0 a3,3 0,1 1,6 0 a3,3 0,1 1,-6 0 M58,64 L62,64 L62,71 L58,71 Z" />
+        android:pathData="M60,60 m-3,0 a3,3 0,1 1,6 0 a3,3 0,1 1,-6 0 M58,63 L62,63 L62,69 L58,69 Z" />
 </vector>
