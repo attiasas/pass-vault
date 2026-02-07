@@ -42,9 +42,9 @@
     <string name="strength">Strength</string>
     <string name="value">Value</string>
     <string name="history">History</string>
-    <string name="start_date">Start date</string>
+    <string name="start_date">Creation date</string>
     <string name="update_date">Update date</string>
-    <string name="start_date_days_exist">Start date (%d days exist)</string>
+    <string name="start_date_days_exist">Creation date (%d days exist)</string>
     <string name="update_date_days_in_use">Update date (%d days in use)</string>
     <string name="reuse_check">Password reuse check</string>
     <string name="reuse_check_count_label">Check last X passwords</string>
