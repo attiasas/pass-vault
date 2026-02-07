@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 failedAttempts = 0;
+                hidePrankMessage();
             }
             setLoading(true);
             final boolean createVault = isNew;
@@ -71,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error: " + resultError.getMessage(), Toast.LENGTH_SHORT).show();
                     } else {
                         failedAttempts = 0;
+                        hidePrankMessage();
                         openVault();
                     }
                 });
@@ -113,15 +115,20 @@ public class LoginActivity extends AppCompatActivity {
     /** Prank: show escalating fake “delete” / mock messages. No real data is ever deleted. */
     private void showPrankMessage() {
         String message;
-        int duration = Toast.LENGTH_LONG;
         if (failedAttempts == 1) {
             message = getString(R.string.prank_warn_next);
         } else if (failedAttempts == 2) {
             message = getString(R.string.prank_deleted_mock);
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         } else {
             String[] options = getResources().getStringArray(R.array.prank_meaningless);
             message = options[new java.util.Random().nextInt(options.length)];
         }
-        Toast.makeText(this, message, duration).show();
+        binding.prankMessageText.setText(message);
+        binding.prankMessageCard.setVisibility(View.VISIBLE);
+    }
+
+    private void hidePrankMessage() {
+        binding.prankMessageCard.setVisibility(View.GONE);
     }
 }
