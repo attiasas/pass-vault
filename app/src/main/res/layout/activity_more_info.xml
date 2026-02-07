@@ -203,9 +203,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/historyList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:minHeight="0dp"
+                android:layout_height="400dp"
+                android:nestedScrollingEnabled="true"
+                android:scrollbars="vertical"
                 android:clipToPadding="false" />
         </LinearLayout>
     </ScrollView>
