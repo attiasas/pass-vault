@@ -91,6 +91,10 @@ public class AddEditEntryActivity extends AppCompatActivity {
             Toast.makeText(this, "Title required", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (password.isEmpty()) {
+            Toast.makeText(this, getString(R.string.password_required), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (isEdit) {
             String oldPass = entry.getPasswordOrToken();

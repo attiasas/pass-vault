@@ -31,7 +31,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/title">
+                android:hint="@string/title_required_hint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTitle"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="@string/password"
+                android:hint="@string/password_required_hint"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

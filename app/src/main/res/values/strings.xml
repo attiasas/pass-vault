@@ -2,14 +2,19 @@
 <resources>
     <string name="app_name">PassVault</string>
     <string name="master_password">Master password</string>
+    <string name="master_password_required_hint">Master password *</string>
     <string name="login">Log in</string>
     <string name="create_vault">Create vault</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="confirm_password_required_hint">Confirm password *</string>
     <string name="add_entry">Add entry</string>
     <string name="edit_entry">Edit entry</string>
     <string name="title">Title</string>
+    <string name="title_required_hint">Title (required)</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="password_required_hint">Password (required)</string>
+    <string name="password_required">Password is required</string>
     <string name="token">Token</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
