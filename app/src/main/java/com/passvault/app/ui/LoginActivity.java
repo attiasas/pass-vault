@@ -20,6 +20,8 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private VaultRepository vault;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    /** Consecutive wrong-password attempts (prank: fake “delete” warnings). Reset on success. */
+    private int failedAttempts = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +45,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } else {
                 if (!vault.verifyPassword(pass)) {
-                    Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
+                    failedAttempts++;
+                    showPrankMessage();
                     return;
                 }
+                failedAttempts = 0;
             }
             setLoading(true);
             final boolean createVault = isNew;
@@ -66,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (resultError != null) {
                         Toast.makeText(this, "Error: " + resultError.getMessage(), Toast.LENGTH_SHORT).show();
                     } else {
+                        failedAttempts = 0;
                         openVault();
                     }
                 });
@@ -103,5 +108,20 @@ public class LoginActivity extends AppCompatActivity {
     private void openVault() {
         startActivity(new Intent(this, VaultActivity.class));
         finish();
+    }
+
+    /** Prank: show escalating fake “delete” / mock messages. No real data is ever deleted. */
+    private void showPrankMessage() {
+        String message;
+        int duration = Toast.LENGTH_LONG;
+        if (failedAttempts == 1) {
+            message = getString(R.string.prank_warn_next);
+        } else if (failedAttempts == 2) {
+            message = getString(R.string.prank_deleted_mock);
+        } else {
+            String[] options = getResources().getStringArray(R.array.prank_meaningless);
+            message = options[new java.util.Random().nextInt(options.length)];
+        }
+        Toast.makeText(this, message, duration).show();
     }
 }

@@ -56,4 +56,13 @@
     <string name="entries_count">%d entry(ies)</string>
     <string name="entries_count_filtered">%1$d of %2$d</string>
     <string name="search_by_title">Search by title</string>
+    <!-- Prank: fake scare for wrong password (no real deletion) -->
+    <string name="prank_warn_next">Wrong password. The next wrong attempt will permanently delete all vault data.</string>
+    <string name="prank_deleted_mock">All vault data has been deleted. Hope it was worth it, detective.</string>
+    <string-array name="prank_meaningless">
+        <item>The vault is empty. Your efforts are noted. And pointless.</item>
+        <item>Nothing to see here. Literally. You deleted it.</item>
+        <item>Error 0xSnoop: access denied. Data wiped. Bye.</item>
+        <item>Still trying? Cute. There\'s nothing left. Move on.</item>
+    </string-array>
 </resources>
