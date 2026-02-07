@@ -1,12 +1,15 @@
 package com.passvault.app.ui;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,11 +66,14 @@ public class MoreInfoActivity extends AppCompatActivity {
 
         int health = HealthCalculator.calculate(entry.getUpdatedAt());
         int daysSince = HealthCalculator.daysSinceUpdate(entry.getUpdatedAt());
-        binding.healthValue.setText(String.format(Locale.getDefault(), "%s (%d) — %d days since update",
-                HealthCalculator.badgeLabel(health), health, daysSince));
+        binding.healthValue.setText(String.format(Locale.getDefault(), "%s (%d)", HealthCalculator.badgeLabel(health), health));
+        binding.healthProgress.setProgress(health);
+        binding.healthProgress.setProgressTintList(ColorStateList.valueOf(healthColor(health)));
 
         int strength = PasswordStrength.calculate(entry.getPasswordOrToken() != null ? entry.getPasswordOrToken() : "");
         binding.strengthValue.setText(String.format(Locale.getDefault(), "%s (%d)", PasswordStrength.label(strength), strength));
+        binding.strengthProgress.setProgress(strength);
+        binding.strengthProgress.setProgressTintList(ColorStateList.valueOf(strengthColor(strength)));
 
         binding.startDate.setText(SDF.format(new Date(entry.getCreatedAt())));
         binding.updateDate.setText(SDF.format(new Date(entry.getUpdatedAt())));
@@ -78,6 +84,18 @@ public class MoreInfoActivity extends AppCompatActivity {
         binding.historyList.setLayoutManager(new LinearLayoutManager(this));
         binding.historyList.setAdapter(adapter);
         binding.historyList.setVisibility(history.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private int healthColor(int health) {
+        if (health >= 80) return ContextCompat.getColor(this, R.color.health_good);
+        if (health >= 50) return ContextCompat.getColor(this, R.color.health_warning);
+        return ContextCompat.getColor(this, R.color.health_bad);
+    }
+
+    private int strengthColor(int strength) {
+        if (strength >= 75) return ContextCompat.getColor(this, R.color.health_good);
+        if (strength >= 50) return ContextCompat.getColor(this, R.color.health_warning);
+        return ContextCompat.getColor(this, R.color.health_bad);
     }
 
     private static class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.Holder> {
