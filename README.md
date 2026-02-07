@@ -12,6 +12,7 @@ A minimal, local-only Android app to store and manage auth entries (passwords/to
 - **More info** – Per entry: health score, strength, start/update dates, days in use, and **history** of previous passwords (start/end date, days used, value).
 - **Password generator** – Length, digits/uppercase/special, lowercase ratio; copy to clipboard or use when adding/editing an entry.
 - **Encryption method** – Choose AES-256-GCM or AES-256-CBC in Settings.
+- **Storage backend** – Choose file (.dat) or SQL database; switch in Settings (data is migrated).
 - **Export** – JSON file of all current entries (no history).
 - **Import** – Restore from an exported JSON file (e.g. move to another device).
 
@@ -28,15 +29,19 @@ app/src/main/java/com/passvault/app/
 │   ├── EntryHistoryItem.java     # One past password record
 │   └── EncryptionMethod.java     # AES_256_GCM, AES_256_CBC
 ├── storage/
-│   ├── PrefsManager.java          # Salt, master hash, encryption method
-│   └── VaultRepository.java       # Unlock, CRUD, encrypt/decrypt vault file
+│   ├── VaultStorage.java          # Interface: load/save encrypted entries
+│   ├── FileVaultStorage.java      # File-backed storage (.dat)
+│   ├── SqlVaultStorage.java       # SQLite-backed storage
+│   ├── StorageType.java           # FILE / SQL (user choice in Settings)
+│   ├── PrefsManager.java          # Salt, master hash, encryption method, storage type
+│   └── VaultRepository.java       # Unlock, CRUD; delegates to current VaultStorage
 ├── ui/
 │   ├── LoginActivity.java
 │   ├── VaultActivity.java         # List of entries + FAB
 │   ├── EntriesAdapter.java       # Entry cards, health badge, show/hide, more info
 │   ├── AddEditEntryActivity.java
 │   ├── PasswordGeneratorActivity.java
-│   ├── SettingsActivity.java     # Encryption, change password, export/import
+│   ├── SettingsActivity.java     # Encryption, storage type, change password, export/import
 │   └── MoreInfoActivity.java     # Health, strength, dates, history list
 └── util/
     ├── ExportImport.java          # JSON export/import (no history)

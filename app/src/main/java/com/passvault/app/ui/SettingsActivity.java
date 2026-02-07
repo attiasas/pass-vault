@@ -14,6 +14,7 @@ import com.passvault.app.PassVaultApp;
 import com.passvault.app.R;
 import com.passvault.app.data.EncryptionMethod;
 import com.passvault.app.databinding.ActivitySettingsBinding;
+import com.passvault.app.storage.StorageType;
 import com.passvault.app.storage.VaultRepository;
 import com.passvault.app.util.ExportImport;
 
@@ -42,6 +43,38 @@ public class SettingsActivity extends AppCompatActivity {
 
         binding.toolbar.setNavigationOnClickListener(v -> finish());
 
+        // Storage type (File vs SQL)
+        List<String> storageNames = new ArrayList<>();
+        for (StorageType t : StorageType.values()) {
+            storageNames.add(t.getDisplayName());
+        }
+        binding.spinnerStorageType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, storageNames));
+        int storageIdx = 0;
+        for (int i = 0; i < StorageType.values().length; i++) {
+            if (StorageType.values()[i] == vault.getStorageType()) {
+                storageIdx = i;
+                break;
+            }
+        }
+        binding.spinnerStorageType.setSelection(storageIdx);
+        binding.spinnerStorageType.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                StorageType selected = StorageType.values()[position];
+                if (selected == vault.getStorageType()) return;
+                try {
+                    vault.switchStorageType(selected);
+                    Toast.makeText(SettingsActivity.this, getString(R.string.storage_switched), Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(SettingsActivity.this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+
+        // Encryption method
         List<String> names = new ArrayList<>();
         for (EncryptionMethod m : EncryptionMethod.values()) {
             names.add(m.getDisplayName());

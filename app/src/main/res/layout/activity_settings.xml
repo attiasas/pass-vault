@@ -30,6 +30,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/storage_type"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+            <Spinner
+                android:id="@+id/spinnerStorageType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/encryption_method"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />

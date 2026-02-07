@@ -2,46 +2,41 @@ package com.passvault.app.storage;
 
 import android.content.Context;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.passvault.app.crypto.KeyDerivation;
-import com.passvault.app.crypto.VaultCipher;
 import com.passvault.app.data.AuthEntry;
 import com.passvault.app.data.EncryptionMethod;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Encrypted local storage for auth entries. All data encrypted with master key.
+ * Persistence is delegated to {@link VaultStorage} (file or SQL), chosen in settings.
  */
 public class VaultRepository {
 
-    private static final String VAULT_FILE = "vault.dat";
-
     private final Context context;
     private final PrefsManager prefs;
-    private final Gson gson;
     private byte[] currentKey;
     private List<AuthEntry> entriesCache;
 
     public VaultRepository(Context context) {
         this.context = context.getApplicationContext();
         this.prefs = new PrefsManager(context);
-        this.gson = new Gson();
+    }
+
+    private VaultStorage getStorage() {
+        return prefs.getStorageType() == StorageType.SQL
+                ? new SqlVaultStorage(context)
+                : new FileVaultStorage(context);
     }
 
     public void unlock(char[] masterPassword) throws Exception {
         byte[] salt = prefs.getSalt();
         if (salt == null) throw new IllegalStateException("No salt");
         currentKey = KeyDerivation.deriveKey(masterPassword, salt);
-        loadEntries();
+        entriesCache = getStorage().loadEntries(currentKey, prefs.getEncryptionMethod());
+        if (entriesCache == null) entriesCache = new ArrayList<>();
     }
 
     public void createVault(char[] masterPassword) throws Exception {
@@ -126,36 +121,28 @@ public class VaultRepository {
         prefs.setEncryptionMethod(method);
     }
 
-    private void loadEntries() throws Exception {
-        File file = new File(context.getFilesDir(), VAULT_FILE);
-        if (!file.exists()) {
-            entriesCache = new ArrayList<>();
-            return;
+    public StorageType getStorageType() {
+        return prefs.getStorageType();
+    }
+
+    /**
+     * Switch storage (file ↔ SQL) and migrate current data. Call when vault is unlocked.
+     */
+    public void switchStorageType(StorageType newType) {
+        if (currentKey == null || entriesCache == null) throw new IllegalStateException("Vault locked");
+        if (prefs.getStorageType() == newType) return;
+        try {
+            prefs.setStorageType(newType);
+            getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), entriesCache);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to switch storage", e);
         }
-        byte[] raw;
-        try (FileInputStream fis = new FileInputStream(file)) {
-            raw = new byte[(int) file.length()];
-            int n = fis.read(raw);
-            if (n != raw.length) throw new IOException("Short read");
-        }
-        String json = VaultCipher.decrypt(currentKey, new String(raw, StandardCharsets.UTF_8), prefs.getEncryptionMethod());
-        if (json == null || json.isEmpty()) {
-            entriesCache = new ArrayList<>();
-            return;
-        }
-        entriesCache = gson.fromJson(json, new TypeToken<List<AuthEntry>>() {}.getType());
-        if (entriesCache == null) entriesCache = new ArrayList<>();
     }
 
     private void saveEntries() {
         if (currentKey == null || entriesCache == null) return;
         try {
-            String json = gson.toJson(entriesCache);
-            String encrypted = VaultCipher.encrypt(currentKey, json, prefs.getEncryptionMethod());
-            File file = new File(context.getFilesDir(), VAULT_FILE);
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(encrypted.getBytes(StandardCharsets.UTF_8));
-            }
+            getStorage().saveEntries(currentKey, prefs.getEncryptionMethod(), entriesCache);
         } catch (Exception e) {
             throw new RuntimeException("Save failed", e);
         }

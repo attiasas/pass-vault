@@ -7,7 +7,7 @@ import android.util.Base64;
 import com.passvault.app.data.EncryptionMethod;
 
 /**
- * Stores salt, master password hash, and chosen encryption method.
+ * Stores salt, master password hash, encryption method, and storage type.
  */
 public class PrefsManager {
 
@@ -16,6 +16,7 @@ public class PrefsManager {
     private static final String KEY_MASTER_HASH = "master_hash";
     private static final String KEY_ENCRYPTION_METHOD = "encryption_method";
     private static final String KEY_VAULT_EXISTS = "vault_exists";
+    private static final String KEY_STORAGE_TYPE = "storage_type";
 
     private final SharedPreferences prefs;
 
@@ -55,6 +56,19 @@ public class PrefsManager {
 
     public void setEncryptionMethod(EncryptionMethod method) {
         prefs.edit().putString(KEY_ENCRYPTION_METHOD, method.name()).apply();
+    }
+
+    public StorageType getStorageType() {
+        String name = prefs.getString(KEY_STORAGE_TYPE, StorageType.FILE.name());
+        try {
+            return StorageType.valueOf(name);
+        } catch (Exception e) {
+            return StorageType.FILE;
+        }
+    }
+
+    public void setStorageType(StorageType type) {
+        prefs.edit().putString(KEY_STORAGE_TYPE, type.name()).apply();
     }
 
     public boolean isVaultCreated() {

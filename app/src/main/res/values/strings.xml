@@ -23,6 +23,10 @@
     <string name="import_data">Import</string>
     <string name="change_master_password">Change master password</string>
     <string name="encryption_method">Encryption method</string>
+    <string name="storage_type">Storage</string>
+    <string name="storage_type_file">File (.dat)</string>
+    <string name="storage_type_sql">SQL database</string>
+    <string name="storage_switched">Storage type updated</string>
     <string name="length">Length</string>
     <string name="generate">Generate</string>
     <string name="copy">Copy</string>
