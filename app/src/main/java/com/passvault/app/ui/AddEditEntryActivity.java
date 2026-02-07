@@ -1,17 +1,24 @@
 package com.passvault.app.ui;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.passvault.app.PassVaultApp;
 import com.passvault.app.R;
 import com.passvault.app.data.AuthEntry;
 import com.passvault.app.databinding.ActivityAddEditEntryBinding;
 import com.passvault.app.storage.VaultRepository;
+import com.passvault.app.util.PasswordStrength;
+
+import java.util.Locale;
 
 public class AddEditEntryActivity extends AppCompatActivity {
 
@@ -63,6 +70,17 @@ public class AddEditEntryActivity extends AppCompatActivity {
             startActivityForResult(new Intent(this, PasswordGeneratorActivity.class)
                     .putExtra(PasswordGeneratorActivity.EXTRA_RETURN_PASSWORD, true), 2);
         });
+        binding.editPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateStrengthDisplay();
+            }
+        });
+        updateStrengthDisplay();
     }
 
     private void save() {
@@ -113,7 +131,24 @@ public class AddEditEntryActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
             String pass = data.getStringExtra(PasswordGeneratorActivity.EXTRA_PASSWORD_RESULT);
-            if (pass != null) binding.editPassword.setText(pass);
+            if (pass != null) {
+                binding.editPassword.setText(pass);
+                updateStrengthDisplay();
+            }
         }
+    }
+
+    private void updateStrengthDisplay() {
+        String pass = binding.editPassword.getText() != null ? binding.editPassword.getText().toString() : "";
+        int strength = PasswordStrength.calculate(pass);
+        binding.strengthProgress.setProgress(strength);
+        binding.strengthProgress.setProgressTintList(ColorStateList.valueOf(strengthColor(strength)));
+        binding.strengthValue.setText(String.format(Locale.getDefault(), "%s (%d)", PasswordStrength.label(strength), strength));
+    }
+
+    private int strengthColor(int strength) {
+        if (strength >= 75) return ContextCompat.getColor(this, R.color.health_good);
+        if (strength >= 50) return ContextCompat.getColor(this, R.color.health_warning);
+        return ContextCompat.getColor(this, R.color.health_bad);
     }
 }
