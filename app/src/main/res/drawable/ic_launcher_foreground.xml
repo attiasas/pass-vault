@@ -4,20 +4,33 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Dark circle background -->
+    <!-- Outer circle background -->
     <path
         android:fillColor="#1E3A5F"
-        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
-    <!-- Lock body -->
+        android:pathData="M54,54m-42,0a42,42 0,1 1,84 0a42,42 0,1 1,-84 0" />
+    <!-- Inner circle (slightly lighter, depth) -->
+    <path
+        android:fillColor="#243D63"
+        android:pathData="M54,54m-36,0a36,36 0,1 1,72 0a36,36 0,1 1,-72 0" />
+    <!-- Lock body - rounded rectangle -->
     <path
         android:fillColor="#4A90D9"
-        android:pathData="M38,56 L38,40 Q38,28 54,28 Q70,28 70,40 L70,56 Z" />
-    <!-- Shackle -->
+        android:pathData="M36,58 L36,42 C36,34 44,30 54,30 C64,30 72,34 72,42 L72,58 C72,62 68,64 64,64 L44,64 C40,64 36,62 36,58 Z" />
+    <!-- Body highlight (top edge) -->
     <path
         android:fillColor="#6BABE8"
-        android:pathData="M46,28 L46,18 Q46,12 54,12 Q62,12 62,18 L62,28 L46,28 Z" />
-    <!-- Keyhole -->
+        android:pathData="M40,42 C40,36 46,32 54,32 C62,32 68,36 68,42 L68,44 L40,44 Z" />
+    <!-- Shackle - U shape with rounded top -->
+    <path
+        android:fillColor="#5A9FE6"
+        android:fillType="evenOdd"
+        android:pathData="M44,30 L44,18 C44,12 48,10 54,10 C60,10 64,12 64,18 L64,30 L44,30 Z M48,26 L48,20 C48,17 51,16 54,16 C57,16 60,17 60,20 L60,26 L48,26 Z" />
+    <!-- Keyhole circle -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,38 m-2,0 a2,2 0,1 1,4 0 a2,2 0,1 1,-4 0 M53,42 L55,42 L55,48 L53,48 Z" />
+        android:pathData="M54,42 m-2.5,0 a2.5,2.5 0,1 1,5 0 a2.5,2.5 0,1 1,-5 0" />
+    <!-- Keyhole slot -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52.5,45 L55.5,45 L55.5,52 L52.5,52 Z" />
 </vector>
