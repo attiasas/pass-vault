@@ -1,6 +1,9 @@
-# PassVault – Android auth vault (Java)
+# PassVault
 
-A minimal, local-only Android app to store and manage auth entries (passwords/tokens) protected by a master password. All data is stored encrypted on device.
+A minimal, local-only Android app to store and manage auth entries (passwords/tokens) protected by a master password. All data is stored encrypted on device. Built with Java and Android SDK.
+
+**Requirements:** Android 7.0+ (API 24), Java 17.  
+**Build:** compileSdk 34, targetSdk 34.
 
 ## Features
 
