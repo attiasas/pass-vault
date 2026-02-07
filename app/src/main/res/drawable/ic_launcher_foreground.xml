@@ -4,10 +4,20 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#4A90D9"
-        android:pathData="M54,36 L72,48 L72,72 L54,84 L36,72 L36,48 Z" />
+    <!-- Dark circle background -->
     <path
         android:fillColor="#1E3A5F"
-        android:pathData="M54,44 L66,52 L66,68 L54,76 L42,68 L42,52 Z" />
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+    <!-- Lock body -->
+    <path
+        android:fillColor="#4A90D9"
+        android:pathData="M38,56 L38,40 Q38,28 54,28 Q70,28 70,40 L70,56 Z" />
+    <!-- Shackle -->
+    <path
+        android:fillColor="#6BABE8"
+        android:pathData="M46,28 L46,18 Q46,12 54,12 Q62,12 62,18 L62,28 L46,28 Z" />
+    <!-- Keyhole -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,38 m-2,0 a2,2 0,1 1,4 0 a2,2 0,1 1,-4 0 M53,42 L55,42 L55,48 L53,48 Z" />
 </vector>

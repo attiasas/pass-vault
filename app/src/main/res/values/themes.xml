@@ -9,4 +9,9 @@
         <item name="android:windowBackground">@color/surface</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+    <!-- Overflow menu: dark background, white text (for toolbars with primary background) -->
+    <style name="ThemeOverlay.PassVault.Popup" parent="ThemeOverlay.MaterialComponents.Dark">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:colorBackground">@color/primary_dark</item>
+    </style>
 </resources>
