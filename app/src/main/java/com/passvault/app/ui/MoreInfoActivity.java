@@ -130,7 +130,9 @@ public class MoreInfoActivity extends AppCompatActivity {
             h.strengthProgress.setProgress(strength);
             h.strengthProgress.setProgressTintList(ColorStateList.valueOf(MoreInfoActivity.strengthColorFromScore(h.itemView.getContext(), strength)));
             h.strengthValue.setText(String.format(java.util.Locale.getDefault(), "%s (%d)", PasswordStrength.label(strength), strength));
-            h.passValue.setVisibility(p != null && !p.isEmpty() ? View.VISIBLE : View.GONE);
+            boolean hasValue = p != null && !p.isEmpty();
+            h.labelValue.setVisibility(hasValue ? View.VISIBLE : View.GONE);
+            h.passValue.setVisibility(hasValue ? View.VISIBLE : View.GONE);
             h.passValue.setText(p != null ? p : "");
         }
 
@@ -140,13 +142,14 @@ public class MoreInfoActivity extends AppCompatActivity {
         }
 
         static class Holder extends RecyclerView.ViewHolder {
-            TextView range, days, strengthValue, passValue;
+            TextView range, days, strengthValue, passValue, labelValue;
             ProgressBar strengthProgress;
 
             Holder(View itemView) {
                 super(itemView);
                 range = itemView.findViewById(R.id.range);
                 days = itemView.findViewById(R.id.days);
+                labelValue = itemView.findViewById(R.id.labelValue);
                 strengthProgress = itemView.findViewById(R.id.strengthProgress);
                 strengthValue = itemView.findViewById(R.id.strengthValue);
                 passValue = itemView.findViewById(R.id.passValue);

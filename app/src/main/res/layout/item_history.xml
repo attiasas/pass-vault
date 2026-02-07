@@ -32,6 +32,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:text="@string/value"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.05"
+            android:visibility="gone"
+            android:id="@+id/labelValue" />
+        <TextView
+            android:id="@+id/passValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:padding="8dp"
+            android:background="@color/surface"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.05"
+            android:visibility="gone" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@string/strength"
             android:textColor="@color/text_secondary"
             android:textSize="11sp"
@@ -61,14 +84,5 @@
                 android:textStyle="bold"
                 android:minWidth="64dp" />
         </LinearLayout>
-        <TextView
-            android:id="@+id/passValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:fontFamily="monospace"
-            android:visibility="gone" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
