@@ -36,7 +36,7 @@ public class MoreInfoActivity extends AppCompatActivity {
 
     private ActivityMoreInfoBinding binding;
     private VaultRepository vault;
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
