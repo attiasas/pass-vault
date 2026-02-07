@@ -24,6 +24,8 @@ import com.passvault.app.util.HealthCalculator;
 import com.passvault.app.util.PasswordStrength;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -83,7 +85,9 @@ public class MoreInfoActivity extends AppCompatActivity {
         binding.updateDate.setText(SDF.format(new Date(entry.getUpdatedAt())));
 
         List<EntryHistoryItem> history = entry.getHistory();
-        HistoryAdapter adapter = new HistoryAdapter(history);
+        List<EntryHistoryItem> newestFirst = new ArrayList<>(history);
+        Collections.reverse(newestFirst);
+        HistoryAdapter adapter = new HistoryAdapter(newestFirst);
         binding.historyList.setLayoutManager(new LinearLayoutManager(this));
         binding.historyList.setAdapter(adapter);
         binding.historyList.setVisibility(history.isEmpty() ? View.GONE : View.VISIBLE);
