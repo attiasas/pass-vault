@@ -15,7 +15,6 @@
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/white</item>
         <item name="colorOnSurface">@color/white</item>
-        <item name="android:popupMenuBackground">@color/primary_dark</item>
         <item name="actionMenuTextColor">@color/white</item>
     </style>
 </resources>
