@@ -46,4 +46,10 @@
     <string name="update_date">Update date</string>
     <string name="start_date_days_exist">Start date (%d days exist)</string>
     <string name="update_date_days_in_use">Update date (%d days in use)</string>
+    <string name="reuse_check">Password reuse check</string>
+    <string name="reuse_check_count_label">Check last X passwords</string>
+    <string name="enforce_reuse">Enforce no reuse (block save if used before)</string>
+    <string name="reuse_ok">Not used in last %d password(s)</string>
+    <string name="reuse_warning">Already used in last %d password(s)</string>
+    <string name="reuse_blocked">Choose a password not used in the last %d.</string>
 </resources>

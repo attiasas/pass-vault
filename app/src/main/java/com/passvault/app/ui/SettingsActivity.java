@@ -2,6 +2,8 @@ package com.passvault.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -97,6 +99,28 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
+
+        // Password reuse check
+        binding.editReuseCount.setText(String.valueOf(vault.getReuseCheckCount()));
+        binding.editReuseCount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    String t = s != null ? s.toString().trim() : "";
+                    int v = t.isEmpty() ? 3 : Integer.parseInt(t);
+                    v = v < 1 ? 1 : (v > 50 ? 50 : v);
+                    vault.setReuseCheckCount(v);
+                } catch (NumberFormatException ignored) {
+                    vault.setReuseCheckCount(3);
+                }
+            }
+        });
+        binding.switchEnforceReuse.setChecked(vault.getEnforceReuseCheck());
+        binding.switchEnforceReuse.setOnCheckedChangeListener((btn, checked) -> vault.setEnforceReuseCheck(checked));
 
         binding.btnChangePassword.setOnClickListener(v -> showChangePasswordDialog());
         binding.btnExport.setOnClickListener(v -> launchExport());

@@ -149,6 +149,22 @@ public class VaultRepository {
         return prefs.getStorageType();
     }
 
+    public int getReuseCheckCount() {
+        return prefs.getReuseCheckCount();
+    }
+
+    public void setReuseCheckCount(int count) {
+        prefs.setReuseCheckCount(count);
+    }
+
+    public boolean getEnforceReuseCheck() {
+        return prefs.getEnforceReuseCheck();
+    }
+
+    public void setEnforceReuseCheck(boolean enforce) {
+        prefs.setEnforceReuseCheck(enforce);
+    }
+
     /**
      * Switch storage (file ↔ SQL) and migrate current data. Call when vault is unlocked.
      */

@@ -14,11 +14,15 @@ import androidx.core.content.ContextCompat;
 import com.passvault.app.PassVaultApp;
 import com.passvault.app.R;
 import com.passvault.app.data.AuthEntry;
+import com.passvault.app.data.EntryHistoryItem;
 import com.passvault.app.databinding.ActivityAddEditEntryBinding;
 import com.passvault.app.storage.VaultRepository;
 import com.passvault.app.util.PasswordStrength;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class AddEditEntryActivity extends AppCompatActivity {
 
@@ -78,9 +82,11 @@ public class AddEditEntryActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 updateStrengthDisplay();
+                updateReuseDisplay();
             }
         });
         updateStrengthDisplay();
+        updateReuseDisplay();
     }
 
     private void save() {
@@ -93,6 +99,10 @@ public class AddEditEntryActivity extends AppCompatActivity {
         }
         if (password.isEmpty()) {
             Toast.makeText(this, getString(R.string.password_required), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (isEdit && vault.getEnforceReuseCheck() && isPasswordReused(entry, password, vault.getReuseCheckCount())) {
+            Toast.makeText(this, getString(R.string.reuse_blocked, vault.getReuseCheckCount()), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -148,6 +158,41 @@ public class AddEditEntryActivity extends AppCompatActivity {
         binding.strengthProgress.setProgress(strength);
         binding.strengthProgress.setProgressTintList(ColorStateList.valueOf(strengthColor(strength)));
         binding.strengthValue.setText(String.format(Locale.getDefault(), "%s (%d)", PasswordStrength.label(strength), strength));
+    }
+
+    /** True if {@code newPassword} appears in the last X passwords (current + recent history). */
+    private static boolean isPasswordReused(AuthEntry entry, String newPassword, int X) {
+        if (newPassword == null || X < 1) return false;
+        Set<String> lastX = new HashSet<>();
+        String current = entry.getPasswordOrToken();
+        if (current != null && !current.isEmpty()) lastX.add(current);
+        List<EntryHistoryItem> hist = entry.getHistory();
+        for (int i = hist.size() - 1; i >= 0 && lastX.size() < X; i--) {
+            String p = hist.get(i).getPassValue();
+            if (p != null && !p.isEmpty()) lastX.add(p);
+        }
+        return lastX.contains(newPassword);
+    }
+
+    private void updateReuseDisplay() {
+        if (!isEdit) {
+            binding.reuseMessage.setVisibility(android.view.View.GONE);
+            binding.btnSave.setEnabled(true);
+            return;
+        }
+        String password = binding.editPassword.getText() != null ? binding.editPassword.getText().toString() : "";
+        int X = vault.getReuseCheckCount();
+        boolean reused = isPasswordReused(entry, password, X);
+        binding.reuseMessage.setVisibility(android.view.View.VISIBLE);
+        if (reused) {
+            binding.reuseMessage.setText(getString(R.string.reuse_warning, X));
+            binding.reuseMessage.setTextColor(ContextCompat.getColor(this, R.color.health_bad));
+            binding.btnSave.setEnabled(!vault.getEnforceReuseCheck());
+        } else {
+            binding.reuseMessage.setText(getString(R.string.reuse_ok, X));
+            binding.reuseMessage.setTextColor(ContextCompat.getColor(this, R.color.health_good));
+            binding.btnSave.setEnabled(true);
+        }
     }
 
     private int strengthColor(int strength) {

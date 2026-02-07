@@ -17,6 +17,10 @@ public class PrefsManager {
     private static final String KEY_ENCRYPTION_METHOD = "encryption_method";
     private static final String KEY_VAULT_EXISTS = "vault_exists";
     private static final String KEY_STORAGE_TYPE = "storage_type";
+    private static final String KEY_REUSE_CHECK_COUNT = "reuse_check_count";
+    private static final String KEY_ENFORCE_REUSE_CHECK = "enforce_reuse_check";
+
+    private static final int DEFAULT_REUSE_CHECK_COUNT = 3;
 
     private final SharedPreferences prefs;
 
@@ -77,5 +81,25 @@ public class PrefsManager {
 
     public void clearVaultFlag() {
         prefs.edit().remove(KEY_SALT).remove(KEY_MASTER_HASH).remove(KEY_VAULT_EXISTS).apply();
+    }
+
+    /** Number of recent passwords to check for reuse (default 3). */
+    public int getReuseCheckCount() {
+        int v = prefs.getInt(KEY_REUSE_CHECK_COUNT, DEFAULT_REUSE_CHECK_COUNT);
+        return v < 1 ? 1 : (v > 50 ? 50 : v);
+    }
+
+    public void setReuseCheckCount(int count) {
+        int v = count < 1 ? 1 : (count > 50 ? 50 : count);
+        prefs.edit().putInt(KEY_REUSE_CHECK_COUNT, v).apply();
+    }
+
+    /** When true, save is blocked if the new password was used in the last X. */
+    public boolean getEnforceReuseCheck() {
+        return prefs.getBoolean(KEY_ENFORCE_REUSE_CHECK, true);
+    }
+
+    public void setEnforceReuseCheck(boolean enforce) {
+        prefs.edit().putBoolean(KEY_ENFORCE_REUSE_CHECK, enforce).apply();
     }
 }

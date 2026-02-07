@@ -52,6 +52,51 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/reuse_check"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/reuse_check_count_label"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/editReuseCount"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:inputType="number"
+                android:minHeight="48dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:background="@android:drawable/edit_text"
+                android:hint="3" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/enforce_reuse"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchEnforceReuse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnChangePassword"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
