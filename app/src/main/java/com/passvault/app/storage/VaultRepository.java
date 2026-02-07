@@ -77,6 +77,11 @@ public class VaultRepository {
         return currentKey != null;
     }
 
+    /** True if a vault has been created (salt/master hash stored). */
+    public boolean isVaultCreated() {
+        return prefs.isVaultCreated();
+    }
+
     public List<AuthEntry> getAllEntries() {
         if (entriesCache == null) throw new IllegalStateException("Vault locked");
         return new ArrayList<>(entriesCache);
