@@ -122,6 +122,28 @@ public class SettingsActivity extends AppCompatActivity {
         binding.switchEnforceReuse.setChecked(vault.getEnforceReuseCheck());
         binding.switchEnforceReuse.setOnCheckedChangeListener((btn, checked) -> vault.setEnforceReuseCheck(checked));
 
+        // Wrong password: wipe-after attempts and prank-only
+        binding.editWipeAfterAttempts.setText(String.valueOf(vault.getWipeAfterAttempts()));
+        binding.editWipeAfterAttempts.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    String t = s != null ? s.toString().trim() : "";
+                    int v = t.isEmpty() ? 2 : Integer.parseInt(t);
+                    v = v < 1 ? 1 : (v > 10 ? 10 : v);
+                    vault.setWipeAfterAttempts(v);
+                } catch (NumberFormatException ignored) {
+                    vault.setWipeAfterAttempts(2);
+                }
+            }
+        });
+        binding.switchPrankOnly.setChecked(vault.getPrankOnly());
+        binding.switchPrankOnly.setOnCheckedChangeListener((btn, checked) -> vault.setPrankOnly(checked));
+
         binding.btnChangePassword.setOnClickListener(v -> showChangePasswordDialog());
         binding.btnExport.setOnClickListener(v -> launchExport());
         binding.btnImport.setOnClickListener(v -> launchImport());

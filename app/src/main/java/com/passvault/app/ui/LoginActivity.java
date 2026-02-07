@@ -114,18 +114,45 @@ public class LoginActivity extends AppCompatActivity {
 
     /** Prank: show escalating fake “delete” / mock messages. No real data is ever deleted. */
     private void showPrankMessage() {
-        String message;
-        if (failedAttempts == 1) {
-            message = getString(R.string.prank_warn_next);
-        } else if (failedAttempts == 2) {
-            message = getString(R.string.prank_deleted_mock);
+        int wipeAfter = vault.getWipeAfterAttempts();
+        boolean prankOnly = vault.getPrankOnly();
+        int remaining = wipeAfter - failedAttempts;
+
+        if (failedAttempts >= wipeAfter && !prankOnly) {
+            try {
+                vault.wipeAllData();
+            } catch (Exception e) {
+                Toast.makeText(this, "Wipe failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            String message = getString(R.string.prank_deleted_mock);
+            binding.prankMessageText.setText(message);
+            binding.prankMessageCard.setVisibility(View.VISIBLE);
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            restartLoginForCreateVault();
+            return;
+        }
+
+        String message;
+        if (remaining == 1) {
+            message = getString(R.string.prank_warn_next);
+        } else if (remaining > 1) {
+            message = getString(R.string.prank_warn_next_n, remaining);
         } else {
-            String[] options = getResources().getStringArray(R.array.prank_meaningless);
-            message = options[new java.util.Random().nextInt(options.length)];
+            if (failedAttempts == wipeAfter) {
+                message = getString(R.string.prank_deleted_mock);
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            } else {
+                String[] options = getResources().getStringArray(R.array.prank_meaningless);
+                message = options[new java.util.Random().nextInt(options.length)];
+            }
         }
         binding.prankMessageText.setText(message);
         binding.prankMessageCard.setVisibility(View.VISIBLE);
+    }
+
+    private void restartLoginForCreateVault() {
+        startActivity(new Intent(this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
     }
 
     private void hidePrankMessage() {

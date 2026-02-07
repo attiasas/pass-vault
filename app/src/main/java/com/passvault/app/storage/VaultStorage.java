@@ -31,4 +31,9 @@ public interface VaultStorage {
      * True if any vault data exists (so we know vault was created).
      */
     boolean hasData() throws Exception;
+
+    /**
+     * Permanently delete all vault data (used when "real wipe" is enabled after too many wrong passwords).
+     */
+    void wipe() throws Exception;
 }

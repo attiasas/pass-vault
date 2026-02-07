@@ -165,6 +165,33 @@ public class VaultRepository {
         prefs.setEnforceReuseCheck(enforce);
     }
 
+    public int getWipeAfterAttempts() {
+        return prefs.getWipeAfterAttempts();
+    }
+
+    public void setWipeAfterAttempts(int count) {
+        prefs.setWipeAfterAttempts(count);
+    }
+
+    /** When true, wrong-password flow is prank only (no real wipe). Default true. */
+    public boolean getPrankOnly() {
+        return prefs.getPrankOnly();
+    }
+
+    public void setPrankOnly(boolean prankOnly) {
+        prefs.setPrankOnly(prankOnly);
+    }
+
+    /**
+     * Permanently wipe all vault data (storage + prefs). Call when "real wipe" is enabled and
+     * user exceeded allowed wrong-password attempts. After this, vault is gone and user must create a new one.
+     */
+    public void wipeAllData() throws Exception {
+        lock();
+        getStorage().wipe();
+        prefs.clearVaultFlag();
+    }
+
     /**
      * Switch storage (file ↔ SQL) and migrate current data. Call when vault is unlocked.
      */

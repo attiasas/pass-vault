@@ -74,4 +74,12 @@ public class FileVaultStorage implements VaultStorage {
         File file = new File(context.getFilesDir(), VAULT_FILE);
         return file.exists() && file.length() > 0;
     }
+
+    @Override
+    public void wipe() throws Exception {
+        File file = new File(context.getFilesDir(), VAULT_FILE);
+        if (file.exists() && !file.delete()) {
+            throw new IOException("Failed to delete vault file");
+        }
+    }
 }

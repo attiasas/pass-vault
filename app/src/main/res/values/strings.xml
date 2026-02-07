@@ -56,9 +56,14 @@
     <string name="entries_count">%d entry(ies)</string>
     <string name="entries_count_filtered">%1$d of %2$d</string>
     <string name="search_by_title">Search by title</string>
-    <!-- Prank: fake scare for wrong password (no real deletion) -->
+    <!-- Prank / real wipe: wrong password messages -->
     <string name="prank_warn_next">Wrong password. The next wrong attempt will permanently delete all vault data.</string>
+    <string name="prank_warn_next_n">Wrong password. %d more wrong attempts will permanently delete all vault data.</string>
     <string name="prank_deleted_mock">All vault data has been deleted. Hope it was worth it, detective.</string>
+    <string name="settings_wrong_password">Wrong password</string>
+    <string name="settings_wipe_after_attempts">Wipe after N failed attempts</string>
+    <string name="settings_prank_only">Prank only (no real wipe)</string>
+    <string name="settings_prank_only_summary">When on, wrong-password messages are fake. When off, vault is really wiped after N attempts.</string>
     <string-array name="prank_meaningless">
         <item>The vault is empty. Your efforts are noted. And pointless.</item>
         <item>Nothing to see here. Literally. You deleted it.</item>

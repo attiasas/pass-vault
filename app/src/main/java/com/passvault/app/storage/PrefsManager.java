@@ -19,8 +19,11 @@ public class PrefsManager {
     private static final String KEY_STORAGE_TYPE = "storage_type";
     private static final String KEY_REUSE_CHECK_COUNT = "reuse_check_count";
     private static final String KEY_ENFORCE_REUSE_CHECK = "enforce_reuse_check";
+    private static final String KEY_WIPE_AFTER_ATTEMPTS = "wipe_after_attempts";
+    private static final String KEY_PRANK_ONLY = "prank_only";
 
     private static final int DEFAULT_REUSE_CHECK_COUNT = 3;
+    private static final int DEFAULT_WIPE_AFTER_ATTEMPTS = 2;
 
     private final SharedPreferences prefs;
 
@@ -101,5 +104,25 @@ public class PrefsManager {
 
     public void setEnforceReuseCheck(boolean enforce) {
         prefs.edit().putBoolean(KEY_ENFORCE_REUSE_CHECK, enforce).apply();
+    }
+
+    /** Failed attempts before wipe (when real wipe is on). Default 2. */
+    public int getWipeAfterAttempts() {
+        int v = prefs.getInt(KEY_WIPE_AFTER_ATTEMPTS, DEFAULT_WIPE_AFTER_ATTEMPTS);
+        return v < 1 ? 1 : (v > 10 ? 10 : v);
+    }
+
+    public void setWipeAfterAttempts(int count) {
+        int v = count < 1 ? 1 : (count > 10 ? 10 : count);
+        prefs.edit().putInt(KEY_WIPE_AFTER_ATTEMPTS, v).apply();
+    }
+
+    /** When true, wrong-password messages are prank only (no real wipe). Default true. */
+    public boolean getPrankOnly() {
+        return prefs.getBoolean(KEY_PRANK_ONLY, true);
+    }
+
+    public void setPrankOnly(boolean prankOnly) {
+        prefs.edit().putBoolean(KEY_PRANK_ONLY, prankOnly).apply();
     }
 }

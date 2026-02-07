@@ -157,6 +157,11 @@ public class SqlVaultStorage implements VaultStorage {
         }
     }
 
+    @Override
+    public void wipe() throws Exception {
+        context.deleteDatabase(DB_NAME);
+    }
+
     private static final class SqlHelper extends SQLiteOpenHelper {
         SqlHelper(Context context) {
             super(context, DB_NAME, null, VERSION);
