@@ -2,6 +2,8 @@ package com.passvault.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,11 +19,17 @@ import com.passvault.app.data.AuthEntry;
 import com.passvault.app.databinding.ActivityVaultBinding;
 import com.passvault.app.storage.VaultRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class VaultActivity extends AppCompatActivity implements EntriesAdapter.Listener {
 
     private ActivityVaultBinding binding;
     private VaultRepository vault;
     private EntriesAdapter adapter;
+    private List<AuthEntry> allEntries = new ArrayList<>();
+    private String searchQuery = "";
     private static final int[] HEALTH_COLORS = new int[]{
             0xFF10B981, 0xFFF59E0B, 0xFFEF4444
     };
@@ -58,6 +66,18 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
         binding.recycler.setAdapter(adapter);
         refreshList();
 
+        binding.searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchQuery = s != null ? s.toString().trim().toLowerCase(Locale.getDefault()) : "";
+                applyFilter();
+            }
+        });
+
         binding.fab.setOnClickListener(v -> {
             startActivityForResult(new Intent(this, AddEditEntryActivity.class), 1);
         });
@@ -76,7 +96,30 @@ public class VaultActivity extends AppCompatActivity implements EntriesAdapter.L
     }
 
     private void refreshList() {
-        adapter.setEntries(vault.getAllEntries());
+        allEntries = vault.getAllEntries();
+        if (allEntries == null) allEntries = new ArrayList<>();
+        applyFilter();
+    }
+
+    private void applyFilter() {
+        List<AuthEntry> filtered = allEntries;
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            filtered = new ArrayList<>();
+            for (AuthEntry e : allEntries) {
+                String title = e.getTitle();
+                if (title != null && title.toLowerCase(Locale.getDefault()).contains(searchQuery)) {
+                    filtered.add(e);
+                }
+            }
+        }
+        adapter.setEntries(filtered);
+        int total = allEntries.size();
+        int shown = filtered.size();
+        if (searchQuery == null || searchQuery.isEmpty()) {
+            binding.entryCount.setText(getString(R.string.entries_count, total));
+        } else {
+            binding.entryCount.setText(getString(R.string.entries_count_filtered, shown, total));
+        }
     }
 
     @Override

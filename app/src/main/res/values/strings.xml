@@ -52,4 +52,7 @@
     <string name="reuse_ok">Not used in last %d password(s)</string>
     <string name="reuse_warning">Already used in last %d password(s)</string>
     <string name="reuse_blocked">Choose a password not used in the last %d.</string>
+    <string name="entries_count">%d entry(ies)</string>
+    <string name="entries_count_filtered">%1$d of %2$d</string>
+    <string name="search_by_title">Search by title</string>
 </resources>
