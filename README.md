@@ -2,8 +2,11 @@
 
 A minimal, local-only Android app to store and manage auth entries (passwords/tokens) protected by a master password. All data is stored encrypted on device. Built with Java and Android SDK.
 
-**Requirements:** Android 7.0+ (API 24), Java 17.  
-**Build:** compileSdk 34, targetSdk 34.
+### Requirements
+
+- **Android:** minSdk 24 (Android 7.0), targetSdk 34  
+- **Java:** 17  
+- **Gradle:** use the included wrapper (`./gradlew`)
 
 ## Features
 
@@ -55,12 +58,15 @@ app/src/main/java/com/passvault/app/
 
 ## Build and run
 
-- **Android Studio** – Open the project; sync Gradle and run on a device or emulator.
-- **Command line** – Ensure you have the Gradle wrapper (e.g. run `gradle wrapper` once if needed), then:
+- **Android Studio** – Open the project, sync Gradle, then run on a device or emulator (▶ Run).
+- **Command line:**
   ```bash
   ./gradlew assembleDebug
   ```
-  Install the APK from `app/build/outputs/apk/debug/`.
+  Install the debug APK:
+  ```bash
+  adb install -r app/build/outputs/apk/debug/app-debug.apk
+  ```
 
 ## Security notes
 
