@@ -12,8 +12,8 @@
     <path
         android:fillColor="#4A90D9"
         android:pathData="M54,29 L70,35 L70,59 Q54,91 38,59 L38,35 Z" />
-    <!-- Keyhole: moved up to sit centered in shield -->
+    <!-- Keyhole: centered in shield -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,55 m-2.5,0 a2.5,2.5 0,1 1,5 0 a2.5,2.5 0,1 1,-5 0 M52,58 L56,58 L56,64 L52,64 Z" />
+        android:pathData="M54,52 m-2.5,0 a2.5,2.5 0,1 1,5 0 a2.5,2.5 0,1 1,-5 0 M52,55 L56,55 L56,61 L52,61 Z" />
 </vector>
