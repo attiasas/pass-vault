@@ -4,33 +4,33 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Outer circle background -->
+    <!-- Outer circle background (center 54,54) -->
     <path
         android:fillColor="#1E3A5F"
         android:pathData="M54,54m-42,0a42,42 0,1 1,84 0a42,42 0,1 1,-84 0" />
-    <!-- Inner circle (slightly lighter, depth) -->
+    <!-- Inner circle -->
     <path
         android:fillColor="#243D63"
         android:pathData="M54,54m-36,0a36,36 0,1 1,72 0a36,36 0,1 1,-72 0" />
-    <!-- Lock body - rounded rectangle -->
+    <!-- Lock body - centered at (54,54) -->
     <path
         android:fillColor="#4A90D9"
-        android:pathData="M36,58 L36,42 C36,34 44,30 54,30 C64,30 72,34 72,42 L72,58 C72,62 68,64 64,64 L44,64 C40,64 36,62 36,58 Z" />
-    <!-- Body highlight (top edge) -->
+        android:pathData="M36,75 L36,59 C36,51 44,47 54,47 C64,47 72,51 72,59 L72,75 C72,79 68,81 64,81 L44,81 C40,81 36,79 36,75 Z" />
+    <!-- Body highlight -->
     <path
         android:fillColor="#6BABE8"
-        android:pathData="M40,42 C40,36 46,32 54,32 C62,32 68,36 68,42 L68,44 L40,44 Z" />
-    <!-- Shackle - U shape with rounded top -->
+        android:pathData="M40,59 C40,53 46,49 54,49 C62,49 68,53 68,59 L68,61 L40,61 Z" />
+    <!-- Shackle - U shape -->
     <path
         android:fillColor="#5A9FE6"
         android:fillType="evenOdd"
-        android:pathData="M44,30 L44,18 C44,12 48,10 54,10 C60,10 64,12 64,18 L64,30 L44,30 Z M48,26 L48,20 C48,17 51,16 54,16 C57,16 60,17 60,20 L60,26 L48,26 Z" />
+        android:pathData="M44,47 L44,35 C44,29 48,27 54,27 C60,27 64,29 64,35 L64,47 L44,47 Z M48,43 L48,37 C48,33 51,33 54,33 C57,33 60,37 L60,43 L48,43 Z" />
     <!-- Keyhole circle -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,42 m-2.5,0 a2.5,2.5 0,1 1,5 0 a2.5,2.5 0,1 1,-5 0" />
+        android:pathData="M54,59 m-2.5,0 a2.5,2.5 0,1 1,5 0 a2.5,2.5 0,1 1,-5 0" />
     <!-- Keyhole slot -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M52.5,45 L55.5,45 L55.5,52 L52.5,52 Z" />
+        android:pathData="M52.5,62 L55.5,62 L55.5,69 L52.5,69 Z" />
 </vector>
