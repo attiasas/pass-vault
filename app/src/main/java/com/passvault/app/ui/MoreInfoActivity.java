@@ -66,7 +66,6 @@ public class MoreInfoActivity extends AppCompatActivity {
         binding.title.setText(entry.getTitle() != null ? entry.getTitle() : "");
 
         int health = HealthCalculator.calculate(entry.getUpdatedAt());
-        int daysSince = HealthCalculator.daysSinceUpdate(entry.getUpdatedAt());
         binding.healthValue.setText(String.format(Locale.getDefault(), "%s (%d)", HealthCalculator.badgeLabel(health), health));
         binding.healthProgress.setProgress(health);
         binding.healthProgress.setProgressTintList(ColorStateList.valueOf(healthColor(health)));
@@ -76,9 +75,12 @@ public class MoreInfoActivity extends AppCompatActivity {
         binding.strengthProgress.setProgress(strength);
         binding.strengthProgress.setProgressTintList(ColorStateList.valueOf(strengthColor(strength)));
 
+        int daysExist = HealthCalculator.daysSinceUpdate(entry.getCreatedAt());
+        int daysInUse = HealthCalculator.daysSinceUpdate(entry.getUpdatedAt());
+        binding.labelStartDate.setText(getString(R.string.start_date_days_exist, daysExist));
+        binding.labelUpdateDate.setText(getString(R.string.update_date_days_in_use, daysInUse));
         binding.startDate.setText(SDF.format(new Date(entry.getCreatedAt())));
         binding.updateDate.setText(SDF.format(new Date(entry.getUpdatedAt())));
-        binding.daysUsed.setText(String.format(Locale.getDefault(), "%d days", daysSince));
 
         List<EntryHistoryItem> history = entry.getHistory();
         HistoryAdapter adapter = new HistoryAdapter(history);

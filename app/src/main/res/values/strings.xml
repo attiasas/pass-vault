@@ -36,4 +36,6 @@
     <string name="history">History</string>
     <string name="start_date">Start date</string>
     <string name="update_date">Update date</string>
+    <string name="start_date_days_exist">Start date (%d days exist)</string>
+    <string name="update_date_days_in_use">Update date (%d days in use)</string>
 </resources>
