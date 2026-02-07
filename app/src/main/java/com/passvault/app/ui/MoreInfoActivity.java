@@ -1,5 +1,6 @@
 package com.passvault.app.ui;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -93,9 +94,13 @@ public class MoreInfoActivity extends AppCompatActivity {
     }
 
     private int strengthColor(int strength) {
-        if (strength >= 75) return ContextCompat.getColor(this, R.color.health_good);
-        if (strength >= 50) return ContextCompat.getColor(this, R.color.health_warning);
-        return ContextCompat.getColor(this, R.color.health_bad);
+        return strengthColorFromScore(this, strength);
+    }
+
+    static int strengthColorFromScore(Context context, int strength) {
+        if (strength >= 75) return ContextCompat.getColor(context, R.color.health_good);
+        if (strength >= 50) return ContextCompat.getColor(context, R.color.health_warning);
+        return ContextCompat.getColor(context, R.color.health_bad);
     }
 
     private static class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.Holder> {
@@ -119,6 +124,10 @@ public class MoreInfoActivity extends AppCompatActivity {
             h.range.setText(start + " → " + end);
             h.days.setText(item.getDaysUsed() + " days");
             String p = item.getPassValue();
+            int strength = PasswordStrength.calculate(p != null ? p : "");
+            h.strengthProgress.setProgress(strength);
+            h.strengthProgress.setProgressTintList(ColorStateList.valueOf(MoreInfoActivity.strengthColorFromScore(h.itemView.getContext(), strength)));
+            h.strengthValue.setText(String.format(java.util.Locale.getDefault(), "%s (%d)", PasswordStrength.label(strength), strength));
             h.passValue.setVisibility(p != null && !p.isEmpty() ? View.VISIBLE : View.GONE);
             h.passValue.setText(p != null ? p : "");
         }
@@ -129,12 +138,15 @@ public class MoreInfoActivity extends AppCompatActivity {
         }
 
         static class Holder extends RecyclerView.ViewHolder {
-            TextView range, days, passValue;
+            TextView range, days, strengthValue, passValue;
+            ProgressBar strengthProgress;
 
             Holder(View itemView) {
                 super(itemView);
                 range = itemView.findViewById(R.id.range);
                 days = itemView.findViewById(R.id.days);
+                strengthProgress = itemView.findViewById(R.id.strengthProgress);
+                strengthValue = itemView.findViewById(R.id.strengthValue);
                 passValue = itemView.findViewById(R.id.passValue);
             }
         }
