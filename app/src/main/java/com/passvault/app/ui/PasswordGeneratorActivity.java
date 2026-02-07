@@ -43,7 +43,13 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
 
         binding.checkMostSupportedSpecials.setEnabled(binding.checkSpecial.isChecked());
         binding.btnGenerate.setOnClickListener(v -> generate());
-        binding.btnCopy.setOnClickListener(v -> copyGenerated());
+        boolean returnPassword = getIntent().getBooleanExtra(EXTRA_RETURN_PASSWORD, false);
+        if (returnPassword) {
+            binding.btnCopy.setText(R.string.use);
+            binding.btnCopy.setOnClickListener(v -> useAndReturn());
+        } else {
+            binding.btnCopy.setOnClickListener(v -> copyGenerated());
+        }
         binding.editGenerated.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -104,14 +110,13 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void finish() {
-        if (getIntent().getBooleanExtra(EXTRA_RETURN_PASSWORD, false)) {
-            String s = binding.editGenerated.getText() != null ? binding.editGenerated.getText().toString() : "";
-            if (!s.isEmpty()) {
-                setResult(RESULT_OK, new Intent().putExtra(EXTRA_PASSWORD_RESULT, s));
-            }
+    private void useAndReturn() {
+        String s = binding.editGenerated.getText() != null ? binding.editGenerated.getText().toString() : "";
+        if (s.isEmpty()) {
+            Toast.makeText(this, "Generate a password first", Toast.LENGTH_SHORT).show();
+            return;
         }
-        super.finish();
+        setResult(RESULT_OK, new Intent().putExtra(EXTRA_PASSWORD_RESULT, s));
+        finish();
     }
 }
